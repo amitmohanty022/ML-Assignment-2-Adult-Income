@@ -8,7 +8,7 @@ The goal of this project is to predict whether a person earns more than $50K per
 ## b. Dataset description
 
 - **Dataset:** Adult Income Dataset (also called Census Income)
-- **Source:** Downloaded from OpenML, originally from the UCI Machine Learning Repository
+- **Source:** Downloaded from OpenML, originally from the UCI Machine Learning Repository - https://archive.ics.uci.edu/dataset/2/adult
 - **Instances:** 48,842
 - **Input features:** 14 (6 numerical, 8 categorical)
 - **Target:** binary
