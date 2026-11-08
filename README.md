@@ -1,257 +1,249 @@
-# Machine Learning Assignment 2
-## Classification Model Comparison with Pipeline Architecture
+# ML Assignment 2 - Income Prediction
+## Comparing 5 Classification Models
 
-### Problem Statement
+This project is for my ML assignment where I need to train 5 different classification models and compare them. I'm using the Adult Income dataset to predict whether someone makes more than $50K per year or not.
 
-This project implements and compares **5 classification algorithms** on the **Adult Income Dataset** to predict whether an individual's annual income exceeds $50,000. The project follows ML best practices including:
+### What I Did
 
-- Proper train-test split to avoid data leakage
-- sklearn Pipeline architecture combining preprocessing and models
-- Comprehensive evaluation with 6 metrics
-- Saved pipeline deployment (no retraining in production)
-- Interactive Streamlit application for model evaluation
+- Trained 5 models (Logistic Regression, Decision Tree, KNN, Naive Bayes, SVM)
+- Used sklearn Pipelines so everything stays clean and there's no data leakage
+- Evaluated each model with 6 different metrics
+- Saved all the trained models
+- Built a Streamlit app to test them out
 
-**Goal:** Compare model performance and identify the best classifier for income prediction based on demographic and employment features.
+**Goal:** Figure out which model works best for this income prediction problem.
 
-## Dataset Description
+## About the Dataset
 
-**Dataset:** Adult Income Dataset (Census Income)
+**Dataset:** Adult Income Dataset (also called Census Income)
 
-**Source:** I used the dataset from OpenML (originally from UCI ML Repository via scikit-learn)
+**Where I got it:** Downloaded from OpenML, it's originally from the UCI repository
 
-**Basic Info:**
-- Total samples: 48,842 
-- Number of features: 14
-- Target: Binary (Income ≤50K = 0, Income >50K = 1)
-- Mix of categorical and numerical features
+**Size and stuff:**
+- 48,842 samples (pretty big dataset!)
+- 14 features total
+- Target is binary: either income ≤50K (label=0) or >50K (label=1)
+- Has both numerical and categorical features
 
-**Features:**
-The dataset contains demographic and employment information:
+**Features in the data:**
 
-**Numerical Features (6):**
-- age - Age of the person
-- fnlwgt - Final weight (census weighting)
-- education-num - Years of education
-- capital-gain - Capital gains
-- capital-loss - Capital losses
-- hours-per-week - Working hours per week
+Numerical ones (6):
+- age
+- fnlwgt (some census weight thing)
+- education-num (years of education)
+- capital-gain
+- capital-loss  
+- hours-per-week
 
-**Categorical Features (8):**
-- workclass - Type of employment (Private, Government, etc.)
-- education - Highest level of education
-- marital-status - Marital status
-- occupation - Type of occupation
-- relationship - Family relationship
-- race - Race
-- sex - Gender
-- native-country - Country of origin
+Categorical ones (8):
+- workclass (Private, Government, etc.)
+- education
+- marital-status
+- occupation
+- relationship
+- race
+- sex
+- native-country
 
-**Target Variable:**
-- 0 = Income ≤50K per year
-- 1 = Income >50K per year
+**Target:**
+- 0 = earns ≤50K/year
+- 1 = earns >50K/year
 
-**Class Distribution:**
-- Income ≤50K: ~75% (majority class)
-- Income >50K: ~25% (minority class)
+**Class balance:**
+- About 75% are in the ≤50K class
+- About 25% in the >50K class
+- So it's a bit imbalanced
 
-**Data Quality:**
-- Some missing values (handled by filling with median/mode)
-- Categorical features converted to numeric codes
-- All preprocessing done automatically in the code
+**Data issues I dealt with:**
+- Some missing values (filled them with median/mode)
+- Had to convert categorical features to numbers
+- All this is handled in the code automatically
 
-## Repository Structure
+## Project Structure
 
 ```
 ML-Assignment-2/
 │
 ├── data/
-│   └── adult_income.csv           # Full dataset
+│   └── adult_income.csv           # the dataset
 │
-├── model/                          # Saved trained pipelines
+├── model/                          # where trained models are saved
 │   ├── logistic_regression.joblib
 │   ├── decision_tree.joblib
 │   ├── knn.joblib
 │   ├── naive_bayes.joblib
 │   └── svm.joblib
 │
-├── ML_Assignment2.ipynb            # Main Jupyter notebook
-├── app.py                          # Streamlit evaluation app
-├── requirements.txt                # Python dependencies
-├── README.md                       # This file
-├── test_data.csv                   # Test set with labels
-├── model_results.csv               # Metrics comparison table
-└── .gitignore                      # Git ignore rules
+├── ML_Assignment2.ipynb            # main notebook with all the code
+├── app.py                          # streamlit app for testing models
+├── requirements.txt                # packages needed
+├── README.md                       # this file
+├── test_data.csv                   # test set for evaluation
+├── model_results.csv               # comparison of all models
+└── .gitignore                      
 ```
 
-## GitHub Repository Link
+## Links
 
-[Your GitHub Repository URL - Replace with actual URL]
+**GitHub:** https://github.com/amitmohanty022/ML-Assignment-2-Adult-Income
 
-## Live Streamlit Application
+**Live App:** https://ml-assignment-2-adult-income-ywkff77qrwyslvgxp4pkf6.streamlit.app/
 
-[Your Streamlit App URL - Replace with actual URL]
+## The 5 Models I Used
 
-## Models Used
+For this assignment I had to implement 5 classification algorithms:
 
-I implemented 5 classification algorithms as required:
+1. **Logistic Regression** - Basic linear classifier, good starting point
+2. **Decision Tree** - Tree-based model, easy to visualize 
+3. **K-Nearest Neighbors (KNN)** - Set k=5, instance-based learning
+4. **Naive Bayes** - Gaussian NB, fast and simple
+5. **Support Vector Machine (SVM)** - Used RBF kernel, usually gives good results
 
-1. **Logistic Regression** - Simple linear model
-2. **Decision Tree** - Tree-based approach
-3. **K-Nearest Neighbors (KNN)** - Used k=5 neighbors
-4. **Naive Bayes** - Gaussian NB for continuous features
-5. **Support Vector Machine (SVM)** - With RBF kernel
+### Metrics (6 total as required):
+1. Accuracy - overall correctness
+2. AUC Score - area under ROC curve
+3. Precision - positive prediction accuracy
+4. Recall - how many positives we caught
+5. F1 Score - harmonic mean of precision and recall
+6. MCC - Matthews Correlation Coefficient
 
-### For each model, I calculated these 6 metrics:
-1. Accuracy
-2. AUC Score
-3. Precision
-4. Recall
-5. F1 Score
-6. MCC (Matthews Correlation Coefficient)
+### What I Observed
 
-*Note: These will be generated when you run train_models.py - values shown below are from my run*
+| Model | My Thoughts |
+|-------|-------------|
+| **Logistic Regression** | Simple but effective. Works well when features are somewhat linearly separable. Good interpretability - you can see which features matter most. Expected this to be a solid baseline. |
+| **Decision Tree** | Really good with mixed data types. Can handle categorical stuff easily. The tree rules are easy to understand. Main issue is it might overfit - had to watch the depth. |
+| **KNN** | This one was interesting. Distance-based so scaling matters a lot. With k=5 it should balance bias-variance reasonably. Might struggle with high dimensionality though. |
+| **Naive Bayes** | Super fast to train! The independence assumption isn't perfect for this data but it often works anyway. Good for a quick baseline. |
+| **Support Vector Machine** | Took the longest to train but gave good results. RBF kernel helps capture non-linear patterns. Needs scaling (which is why I used Pipeline). |
+| **Best Model** | Based on my results, **SVM performed best** with 85.26% accuracy and 89.40% AUC. But Logistic Regression and KNN were also pretty good. Decision Tree had decent F1 score. |
 
-### Model Performance Observations
+## How to Run
 
-| ML Model Name | Observation about model performance |
-|--------------|-------------------------------------|
-| **Logistic Regression** | Should perform well on this dataset since it handles both numerical and categorical features. Good for interpretability - can see which factors most influence income predictions. Expected accuracy around 80-85%. |
-| **Decision Tree** | Works great with mixed feature types and can capture complex relationships between education, occupation, and income. Easy to interpret the decision rules. Might overfit if not pruned properly. |
-| **KNN** | Performance might vary since we have both categorical and numerical features. The distance calculation could be affected by feature scaling. Used k=5 neighbors as a starting point. |
-| **Naive Bayes** | Despite the independence assumption, should work reasonably well. Fast training is a plus for this larger dataset. Good baseline model to compare against. |
-| **Support Vector Machine** | Expected to perform well after feature scaling. Might take longer to train with 48K samples but should give good accuracy. RBF kernel can capture non-linear relationships between features. |
-| **Overall Winner for your dataset** | Results will vary, but typically **Logistic Regression** or **SVM** perform best on this dataset. Decision Trees also work well due to the mix of categorical features. The winner will be determined after training - check the comparison table! |
-
-## How to Run This Project
-
-### 1. Clone Repository
+### 1. Clone the repo
 ```bash
-git clone [your-github-repo-url]
-cd ML-Assignment-2
+git clone https://github.com/amitmohanty022/ML-Assignment-2-Adult-Income.git
+cd ML-Assignment-2-Adult-Income
 ```
 
-### 2. Install Dependencies
+### 2. Install packages
 ```bash
 pip3 install -r requirements.txt
 ```
 
-Or install individually:
+Or install them one by one:
 ```bash
 pip3 install jupyter pandas numpy scikit-learn matplotlib seaborn joblib streamlit
 ```
 
-### 3. Run Jupyter Notebook
+### 3. Run the Jupyter Notebook
 ```bash
 jupyter notebook ML_Assignment2.ipynb
 ```
 
-Execute all cells to:
-- Load and explore data
-- Train all 5 models with Pipelines
-- Evaluate with 6 metrics
-- Save trained pipelines
-- Generate test_data.csv
+This will:
+- Load and explore the data
+- Train all 5 models (using Pipeline architecture)
+- Calculate the 6 metrics for each
+- Save the trained models as .joblib files
+- Create test_data.csv for the app
 
-### 4. Run Streamlit App
+### 4. Run the Streamlit App
 ```bash
 python3 -m streamlit run app.py
 ```
 
-Or simply:
+or just:
 ```bash
 streamlit run app.py
 ```
+```bash
 
-App opens at `http://localhost:8501`
+Opens at `http://localhost:8501`
 
-### 5. Evaluate Models
-- Upload `test_data.csv` in the app
-- Select different models from dropdown
-- View metrics, confusion matrix, and comparisons
+Then upload the test_data.csv and try out different models!
 
-**Note:** The app loads saved pipelines and only performs evaluation - no retraining occurs.
+## What the App Does
 
-## Using the App
+The Streamlit app is basically a testing interface for the models I trained. You can:
+- Pick any model from the dropdown
+- Upload a CSV with test data  
+- See all the metrics (accuracy, AUC, etc.)
+- Check out the confusion matrix
+- Compare all 5 models at once
 
-### Training
+Just make sure your CSV has all the features plus a 'target' column.
 
-When you run `python3 train_models.py`, it will:
-- Download the Adult Income dataset (48,842 samples)
-- Process categorical features
-- Split into 80% train and 20% test
-- Train all 5 models
-- Save everything in the model/ folder
-- Create test_data.csv and model_results.csv
+## Deployment
 
-**Note:** First run may take 2-3 minutes to download the dataset.
-- Save everything in the model/ folder
-- Create test_data.csv and model_results.csv
+I deployed this on Streamlit Cloud so it's accessible online.
 
-### Web App Features
+**Live URL:** https://ml-assignment-2-adult-income-ywkff77qrwyslvgxp4pkf6.streamlit.app/
 
-The Streamlit app lets you:
-- Pick any of the 5 models from dropdown
-- Upload your own test data (CSV format)
-- See all 6 metrics for the selected model
-- View confusion matrix
-- See classification report
-- Compare all models side-by-side
+To deploy yours:
+1. Push code to GitHub
+2. Go to streamlit.io/cloud
+3. Sign in with GitHub
+4. Click "New app"
+5. Pick your repo, select app.py
+6. Hit Deploy!
 
-The test CSV should have all 30 features plus a 'target' column.
+Takes about 5 minutes. The requirements.txt file tells Streamlit what packages to install.
 
-## Deployment on Streamlit Cloud
+## Quick Metrics Guide
 
-### Steps I followed:
+For anyone not familiar with these metrics:
 
-1. Pushed all code to GitHub
-2. Went to https://streamlit.io/cloud
-3. Logged in with GitHub
-4. Created new app
-5. Selected repository, branch (main), and app.py
-6. Clicked Deploy
+- **Accuracy** - Simple: % of correct predictions out of total
+- **AUC** - How well the model distinguishes between the two classes (0 to 1, higher is better)
+- **Precision** - When model predicts positive, how often is it right?
+- **Recall** - Of all actual positives, how many did we find?
+- **F1 Score** - Combines precision and recall (good when classes are imbalanced)
+- **MCC** - Correlation between predictions and reality (-1 to +1, accounts for class imbalance)
 
-The deployment takes a few minutes. Once done, you get a public URL that anyone can access.
+## My Results
 
-**Note:** Make sure requirements.txt has all dependencies and the model files are in the repo.
+After running everything:
 
-## Metrics Explained
+| Model | Accuracy | AUC | F1 Score |
+|-------|----------|-----|----------|
+| Logistic Regression | 0.8302 | 0.8563 | 0.5601 |
+| Decision Tree | 0.8120 | 0.7461 | 0.6120 |
+| K-Nearest Neighbors | 0.8328 | 0.8525 | 0.6284 |
+| Naive Bayes | 0.8050 | 0.8564 | 0.4556 |
+| **Support Vector Machine** | **0.8526** | **0.8940** | **0.6455** |
 
-- **Accuracy:** % of correct predictions
-- **AUC:** Area under ROC curve - how well model separates classes
-- **Precision:** Of positive predictions, how many were actually positive
-- **Recall:** Of actual positives, how many did we catch
-- **F1 Score:** Harmonic mean of precision and recall
-- **MCC:** Correlation coefficient between predicted and actual (-1 to +1)
+**Winner:** SVM got the best scores overall! Though all models did reasonably well (80%+ accuracy).
 
-## What I Learned
+## Things I Noticed
 
-- Handling categorical features is important - converted them to numeric codes
-- Feature scaling matters for SVM and KNN
-- Larger datasets (48K samples) take longer to train but give more robust results
-- Census data has class imbalance (more people earn ≤50K)
-- Different models handle mixed feature types differently
-- Real-world data requires preprocessing (missing values, categorical encoding)
+- The dataset has way more people earning ≤50K than >50K (class imbalance)
+- Features like education, occupation, and hours-per-week seem important
+- SVM took longest to train but gave best results
+- Decision Tree was fastest and still pretty good
+- Had to handle missing values (some fields had '?' instead of actual values)
+- Feature scaling really matters for SVM and KNN
 
-## Files in This Repo
+## Requirements
 
-```
-├── app.py                    # Streamlit web app
-├── train_models.py           # Script to train all models
-├── requirements.txt          # Python packages needed
-├── README.md                 # This file
-├── test_data.csv            # Test set (created after training)
-├── full_dataset.csv         # Complete dataset
-├── model_results.csv        # All metrics for comparison
-└── model/                   # Folder with trained models
-    ├── logistic_regression.joblib
-    ├── decision_tree.joblib
-    ├── knn.joblib
-    ├── naive_bayes.joblib
-    ├── support_vector_machine.joblib
-    └── scaler.joblib
-```
+See `requirements.txt` for full list. Main ones:
+- Python 3.7+
+- pandas, numpy
+- scikit-learn
+- matplotlib, seaborn
+- streamlit
+- joblib
+
+## Files Explained
+
+- **ML_Assignment2.ipynb** - Main notebook with all the work
+- **app.py** - Streamlit app code
+- **requirements.txt** - Package versions
+- **model/** folder - All 5 trained models saved here
+- **test_data.csv** - Test set for the app
+- **model_results.csv** - Metrics comparison table
+- **full_dataset.csv** - Complete Adult Income dataset
 
 ---
 
-**Created for:** BITS Pilani M.Tech (AIML) - Machine Learning Assignment 2  
-**Date:** November 2026
+Made for ML Assignment 2 | M.Tech AIML | November 2026

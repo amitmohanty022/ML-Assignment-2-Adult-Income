@@ -1,6 +1,6 @@
 # Streamlit App for ML Assignment 2
-# Loads saved pipelines and evaluates uploaded test data
-# No retraining - only evaluation!
+# This app loads the models I trained earlier and lets you test them
+# Note: Models are already trained, this just loads and tests them!
 
 import streamlit as st
 import pandas as pd
@@ -15,132 +15,133 @@ from sklearn.metrics import (
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Page config
+# setting up the page
 st.set_page_config(
     page_title="ML Model Evaluation",
     page_icon="📊",
     layout="wide"
 )
 
-# Title
-st.title("📊 ML Classification Model Evaluation")
-st.markdown("**Course:** M.Tech (AIML) - Machine Learning Assignment 2")
+# main title
+st.title("📊 Income Prediction - Model Comparison")
+st.markdown("**ML Assignment 2** - Comparing 5 Classification Models")
 st.markdown("---")
 
 # Sidebar
-st.sidebar.header("🎯 Model Selection")
-st.sidebar.info("This app evaluates pre-trained models on uploaded test data. No retraining occurs.")
+st.sidebar.header("🎯 Choose Model")
+st.sidebar.info("Select a model to see how it performs. The models were trained on 80% of the data.")
 
-# Available models
+# Models I trained
 available_models = {
     'Logistic Regression': 'model/logistic_regression.joblib',
     'Decision Tree': 'model/decision_tree.joblib',
-    'KNN': 'model/knn.joblib',
+    'K-Nearest Neighbors': 'model/knn.joblib',
     'Naive Bayes': 'model/naive_bayes.joblib',
     'Support Vector Machine': 'model/svm.joblib'
 }
 
 selected_model = st.sidebar.selectbox(
-    "Choose a model to evaluate:",
+    "Pick a model:",
     list(available_models.keys())
 )
 
-# Model descriptions
-model_descriptions = {
-    'Logistic Regression': "Linear model for binary classification. Fast and interpretable.",
-    'Decision Tree': "Tree-based model using recursive partitioning. Highly interpretable.",
-    'KNN': "Instance-based learning using 5 nearest neighbors.",
-    'Naive Bayes': "Probabilistic classifier based on Bayes theorem.",
-    'Support Vector Machine': "Maximum margin classifier with RBF kernel."
+# quick descriptions of each model
+model_info = {
+    'Logistic Regression': "Simple linear model, works well for baseline. Pretty fast.",
+    'Decision Tree': "Tree-based model, easy to understand. Sometimes overfits though.",
+    'K-Nearest Neighbors': "Uses 5 nearest neighbors. Can be slow with large data.",
+    'Naive Bayes': "Probability-based. Assumes features are independent (not always true).",
+    'Support Vector Machine': "SVM with RBF kernel. Usually gives good accuracy but takes time."
 }
 
-st.sidebar.markdown(f"**About this model:**")
-st.sidebar.info(model_descriptions[selected_model])
+st.sidebar.markdown(f"**About:**")
+st.sidebar.info(model_info[selected_model])
 
 st.sidebar.markdown("---")
 
-# File upload
-st.sidebar.header("📁 Upload Test Data")
+# Upload section
+st.sidebar.header("📁 Test Your Data")
 uploaded_file = st.sidebar.file_uploader(
-    "Upload CSV file",
+    "Upload CSV file with test data",
     type=['csv'],
-    help="Upload test data with all features and 'target' column"
+    help="Should have features + target column"
 )
 
-# Sample data download
+# download sample if needed
 if os.path.exists('test_data.csv'):
     with open('test_data.csv', 'rb') as f:
         st.sidebar.download_button(
-            label="📥 Download Sample CSV",
+            label="📥 Get Sample CSV",
             data=f,
             file_name="sample_test_data.csv",
             mime="text/csv"
         )
 
-# Expected format info
-with st.sidebar.expander("ℹ️ Expected CSV Format"):
+# format info
+with st.sidebar.expander("ℹ️ CSV Format"):
     st.write("""
-    Your CSV should include:
-    - All feature columns (numerical, encoded)
-    - A 'target' column with values: 0 or 1
+    Your CSV needs:
+    - All the feature columns
+    - A 'target' column (0 or 1)
     
-    Example structure:
+    Like this:
     ```
     age, workclass, education-num, ..., target
     39, 7, 13, ..., 0
     50, 6, 13, ..., 1
     ```
+    You can download the sample above to see the format.
     """)
 
-# Main content
+# main area
 if uploaded_file is not None:
     try:
-        # Load data
+        # reading the file
         data = pd.read_csv(uploaded_file)
         
-        st.success(f"✓ Data loaded successfully! Shape: {data.shape}")
+        st.success(f"✓ Loaded! Found {data.shape[0]} rows and {data.shape[1]} columns")
         
-        # Check for target column
+        # make sure target exists
         if 'target' not in data.columns:
-            st.error("❌ CSV must contain a 'target' column!")
+            st.error("❌ Missing 'target' column! Please check your CSV.")
             st.stop()
         
-        # Show data preview
-        with st.expander("👀 Preview Uploaded Data"):
+        # quick preview
+        with st.expander("👀 Data Preview (first 10 rows)"):
             st.dataframe(data.head(10))
             
             col1, col2 = st.columns(2)
             with col1:
-                st.metric("Total Samples", len(data))
+                st.metric("Samples", len(data))
             with col2:
                 st.metric("Features", len(data.columns) - 1)
         
         st.markdown("---")
         
-        # Separate features and target
+        # split into X and y
         X_test = data.drop(columns=['target'])
         y_test = data['target']
         
-        # Load selected model
+        # get model path
         model_path = available_models[selected_model]
         
         if not os.path.exists(model_path):
-            st.error(f"❌ Model file not found: {model_path}")
-            st.info("Please run the Jupyter notebook first to train and save models.")
+            st.error(f"❌ Couldn't find model file: {model_path}")
+            st.info("You need to run the notebook first to train models!")
             st.stop()
         
-        # Load model
-        with st.spinner(f"Loading {selected_model}..."):
+        # loading the model
+        with st.spinner(f"Loading {selected_model}... this might take a sec"):
             model = joblib.load(model_path)
         
-        st.success(f"✓ {selected_model} loaded successfully!")
+        st.success(f"✓ {selected_model} ready!")
         
-        # Make predictions (NO TRAINING!)
-        with st.spinner("Evaluating model..."):
+        # predictions (just loading saved model, not training again)
+        with st.spinner("Running predictions..."):
             y_pred = model.predict(X_test)
             y_proba = model.predict_proba(X_test)[:, 1]
         
-        # Calculate metrics
+        # calculating all metrics
         accuracy = accuracy_score(y_test, y_pred)
         auc = roc_auc_score(y_test, y_proba)
         precision = precision_score(y_test, y_pred, zero_division=0)
@@ -148,8 +149,8 @@ if uploaded_file is not None:
         f1 = f1_score(y_test, y_pred, zero_division=0)
         mcc = matthews_corrcoef(y_test, y_pred)
         
-        # Display metrics
-        st.subheader(f"📈 {selected_model} - Evaluation Results")
+        # showing results
+        st.subheader(f"📈 Results for {selected_model}")
         
         col1, col2, col3 = st.columns(3)
         
@@ -167,7 +168,7 @@ if uploaded_file is not None:
         
         st.markdown("---")
         
-        # Confusion Matrix and Classification Report
+        # confusion matrix and report
         col1, col2 = st.columns(2)
         
         with col1:
@@ -176,35 +177,36 @@ if uploaded_file is not None:
             
             fig, ax = plt.subplots(figsize=(6, 5))
             sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax, cbar=False)
-            ax.set_xlabel('Predicted Label')
-            ax.set_ylabel('True Label')
+            ax.set_xlabel('Predicted')
+            ax.set_ylabel('Actual')
             ax.set_title(f'{selected_model}')
             st.pyplot(fig)
             
-            # Show percentages
+            # percentages to understand better
             cm_percent = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis] * 100
-            st.write("**Row Percentages:**")
-            st.write(f"- Class 0: {cm_percent[0,0]:.1f}% correct, {cm_percent[0,1]:.1f}% wrong")
-            st.write(f"- Class 1: {cm_percent[1,1]:.1f}% correct, {cm_percent[1,0]:.1f}% wrong")
+            st.write("**Accuracy by class:**")
+            st.write(f"- Class 0 (<=50K): {cm_percent[0,0]:.1f}% correct")
+            st.write(f"- Class 1 (>50K): {cm_percent[1,1]:.1f}% correct")
         
         with col2:
-            st.subheader("📋 Classification Report")
+            st.subheader("📋 Detailed Report")
             report = classification_report(y_test, y_pred, output_dict=True)
             report_df = pd.DataFrame(report).transpose()
             st.dataframe(report_df.style.format("{:.3f}"))
         
         st.markdown("---")
         
-        # Compare all models if results file exists
-        st.subheader("🏆 Compare All Models")
+        # comparing all models
+        st.subheader("🏆 Model Comparison")
         
+        # check if we have the comparison file
         if os.path.exists('model_results.csv'):
             results_df = pd.read_csv('model_results.csv')
             
-            # Highlight current model
+            # highlighting the one we're looking at now
             def highlight_selected(row):
                 if row['Model'] == selected_model:
-                    return ['background-color: lightyellow'] * len(row)
+                    return ['background-color: #ffffcc'] * len(row)
                 return [''] * len(row)
             
             st.dataframe(
@@ -218,19 +220,20 @@ if uploaded_file is not None:
                 })
             )
             
-            st.caption(f"💡 {selected_model} is highlighted")
+            st.caption(f"💡 Current model ({selected_model}) is highlighted")
             
-            # Visual comparison
-            st.subheader("📊 Performance Comparison")
+            # bar charts for comparison
+            st.subheader("📊 Visual Comparison")
             
-            metrics_to_plot = ['Accuracy', 'AUC', 'Precision', 'Recall', 'F1', 'MCC']
+            metrics = ['Accuracy', 'AUC', 'Precision', 'Recall', 'F1', 'MCC']
             
             fig, axes = plt.subplots(2, 3, figsize=(14, 8))
             axes = axes.flatten()
             
-            for idx, metric in enumerate(metrics_to_plot):
-                ax = axes[idx]
-                colors = ['coral' if m == selected_model else 'steelblue' 
+            for i, metric in enumerate(metrics):
+                ax = axes[i]
+                # highlight current model in different color
+                colors = ['#ff6b6b' if m == selected_model else '#4dabf7' 
                          for m in results_df['Model']]
                 results_df.plot(x='Model', y=metric, kind='bar', ax=ax, 
                               legend=False, color=colors)
@@ -243,42 +246,48 @@ if uploaded_file is not None:
             st.pyplot(fig)
             
         else:
-            st.info("model_results.csv not found. Run the notebook to generate comparison data.")
+            st.info("Couldn't find model_results.csv. Make sure you ran the notebook first!")
         
-        # Note about no retraining
+        # reminding that this doesn't retrain
         st.markdown("---")
-        st.info("⚠️ **Note:** This app only EVALUATES pre-trained models. No retraining occurs when you upload data.")
+        st.info("ℹ️ **Note:** This app just loads and tests the saved models. It doesn't train anything new!")
         
     except Exception as e:
-        st.error(f"Error processing file: {e}")
-        st.info("Please check that your CSV format matches the expected structure.")
+        st.error(f"Oops, something went wrong: {e}")
+        st.info("Double check your CSV format matches the expected structure.")
 
 else:
-    st.info("👈 Please upload a test CSV file from the sidebar to begin evaluation.")
+    # instructions when no file is uploaded
+    st.info("👈 Upload a test CSV file from the sidebar to get started")
     
-    st.markdown("### 📖 How to Use")
+    st.markdown("### How to Use This App")
     st.write("""
-    1. **Select a model** from the sidebar dropdown
-    2. **Upload test data** CSV file (must include 'target' column)
-    3. **View results:** metrics, confusion matrix, and classification report
-    4. **Compare models** in the comparison section
+    1. Pick a model from the sidebar
+    2. Upload your test data CSV (needs to have a 'target' column)
+    3. Check out the results - metrics, confusion matrix, etc.
+    4. Compare with other models
     
-    **Sample data available:** Click "Download Sample CSV" in sidebar
+    You can download a sample CSV from the sidebar if needed!
     """)
     
-    st.markdown("### 🎯 About This Project")
+    st.markdown("### About This Assignment")
     st.write("""
-    This application demonstrates:
-    - **5 Classification Models:** Logistic Regression, Decision Tree, KNN, Naive Bayes, SVM
-    - **6 Evaluation Metrics:** Accuracy, AUC, Precision, Recall, F1, MCC
-    - **Pipeline Architecture:** Preprocessing and model saved together
-    - **No Retraining:** Models are pre-trained and only evaluated here
+    For this assignment I implemented 5 different classification models:
+    - Logistic Regression
+    - Decision Tree 
+    - K-Nearest Neighbors (KNN)
+    - Naive Bayes
+    - Support Vector Machine (SVM)
+    
+    Each model is evaluated using 6 metrics: Accuracy, AUC, Precision, Recall, F1, and MCC.
+    
+    The models were trained on the Adult Income dataset to predict if someone earns >50K/year or not.
     """)
 
-# Footer
+# footer
 st.markdown("---")
 st.markdown("""
-<div style='text-align: center; color: gray;'>
-    <p>BITS Pilani | M.Tech (AIML) | Machine Learning Assignment 2</p>
+<div style='text-align: center; color: #888;'>
+    <p>ML Assignment 2 | M.Tech AIML</p>
 </div>
 """, unsafe_allow_html=True)
