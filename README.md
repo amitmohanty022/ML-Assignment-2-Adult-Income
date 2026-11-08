@@ -74,12 +74,12 @@ All metrics are on the held-out 20% test set (9,769 rows). Precision, Recall and
 
 | ML Model Name | Observation about model performance |
 |---|---|
-| Logistic Regression | WRITE YOUR OWN OBSERVATION HERE |
-| Decision Tree | WRITE YOUR OWN OBSERVATION HERE |
-| KNN | WRITE YOUR OWN OBSERVATION HERE |
-| Naive Bayes | WRITE YOUR OWN OBSERVATION HERE |
-| Support Vector Machine | WRITE YOUR OWN OBSERVATION HERE |
-| Overall, winner for your dataset? | WRITE YOUR OWN ANSWER HERE |
+| Logistic Regression | Simple but effective, and good interpretability - you can see which features matter most. It ranked 4th on both MCC (0.4835) and F1 (0.5601). Precision was high (0.74) but recall was low (0.45), so it missed 1,282 of the 2,338 people who earn >50K. |
+| Decision Tree | Really good with mixed data types and the tree rules are easy to understand. It had the best recall (0.62, found 1,449 of 2,338 high earners) but the lowest precision (0.60) and the lowest AUC (0.75), and it wrongly flagged 948 people as >50K. It ranked 3rd on MCC (0.4880) and F1 (0.6120). |
+| KNN | Distance-based, so scaling matters a lot. With k=5 it ranked 2nd on both MCC (0.5229) and F1 (0.6284), with a better balance of precision (0.67) and recall (0.59) than Logistic Regression. |
+| Naive Bayes | Super fast to train, but the independence assumption isn't a good fit for this data. It ranked last on MCC (0.3849) and F1 (0.4556). Recall was only 0.34, so it missed 1,541 of the 2,338 high earners, even though its AUC (0.856) was similar to Logistic Regression. |
+| Support Vector Machine | Took the longest to train but gave the best results. The RBF kernel helps capture non-linear patterns, and it needs scaling (which is why I used a Pipeline). It ranked 1st on MCC (0.5654) and F1 (0.6455) and was best on 5 of the 6 metrics (all except recall). |
+| Overall, winner for your dataset? | **SVM**, because it had the best MCC (0.5654) and F1 (0.6455). I chose these over accuracy because the data is imbalanced - predicting ≤50K for everyone would already give about 0.76 accuracy. KNN was the runner-up (MCC 0.5229, F1 0.6284) and would be a reasonable choice if training time matters. |
 
 ## Project Structure
 
